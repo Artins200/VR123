@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!--
+  VR123 — единый файл. Внутри: three.js + весь код. Внешних запросов нет, работает офлайн.
+
+  ЭТО НЕ УСТАНАВЛИВАЕМЫЙ .apk, А САМОДОСТАТОЧНЫЙ HTML.
+  Android на файл с расширением .apk ругается «не удалось обработать этот пакет»,
+  потому что ищет внутри ZIP с AndroidManifest.xml и classes.dex, а тут HTML.
+  Поэтому файл называется index.html.
+
+  КАК ЗАПУСТИТЬ
+  1) Телефон / планшет / ПК: открой этот файл в Chrome (или перетащи в браузер).
+     Если Android не даёт открыть файл из загрузок — переименуй его в vr123.html.
+  2) Шлем (Quest / Pico): скопируй файл на устройство и открой в Oculus Browser —
+     там есть WebXR, трекинг рук и кнопка «Войти в VR».
+
+  КАК ПОЛУЧИТЬ НАСТОЯЩИЙ УСТАНАВЛИВАЕМЫЙ .apk
+  В веб-песочнице его собрать нельзя (нет java/javac и Android SDK). Два рабочих пути:
+  a) GitHub Actions: в репозитории есть .github/workflows/build-apk.yml —
+     запушь ветку, зайди в Actions -> Build APK -> скачай артефакт VR123-apk.
+  b) Локально (Java 17 + Android SDK):
+     npm i -g @capacitor/cli @capacitor/core && npm i @capacitor/android
+     mkdir app && cp index.html app/
+     cd app && npm init -y && npx cap init VR123 com.vr123.app --web-dir=.
+     npx cap add android && npx cap sync && cd android && ./gradlew assembleDebug
+     -> android/app/build/outputs/apk/debug/app-debug.apk
+  Учти: для WebXR внутри такого apk нужен WebView с поддержкой WebXR,
+  надёжнее всего открывать этот файл напрямую в Oculus Browser на шлеме.
+-->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ffffff">
+<title>VR123 — Лиминальное пространство</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"></div>
+
+<!-- Камера (passthrough): включается, но в VR-режиме мы её не видим —
+     она только «светит» в текстуру для отладки/фон в 2D -->
+<video id="passthrough" playsinline muted autoplay></video>
+
+<div id="overlay">
+  <div id="hud">
+    <div id="hudTitle">VR123 <span>· лиминальное пространство</span></div>
+    <div id="hudStats">
+      <div><b>HP</b><span id="hpBar"><i></i></span><em id="hpVal">100</em></div>
+      <div><b>СЧЁТ</b><em id="scoreVal">0</em></div>
+      <div><b>НПС</b><em id="npcVal">0</em></div>
+      <div><b>КУБЫ</b><em id="cubeVal">0</em></div>
+    </div>
+    <div id="hudLog"></div>
+  </div>
+
+  <div id="tools">
+    <button class="tool active" data-tool="hand">✋ Рука<span>пинч — взять/перенести</span></button>
+    <button class="tool" data-tool="block">🧱 Блоки<span>пинч — ставить по сетке</span></button>
+    <button class="tool" data-tool="spray">🎨 Баллон<span>зажать — рисовать</span></button>
+    <button class="tool" data-tool="weld">⚡ Сварка<span>зажать — искры/шов</span></button>
+    <button class="tool" data-tool="pistol">🔫 Пистолет<span>клик — огонь</span></button>
+    <button class="tool" data-tool="rifle">💥 Винтовка<span>зажать — очередь</span></button>
+    <button class="tool" data-tool="sword">🗡 Меч<span>замах — удар</span></button>
+    <button class="tool" data-tool="del">🧽 Ластик<span>пинч — убрать</span></button>
+    <div class="sep"></div>
+    <button class="tool act" data-act="npc">👤 НПС<span>в точку прицела</span></button>
+    <button class="tool act" data-act="horde">👥 Орда<span>5 нпс сразу</span></button>
+    <button class="tool act" data-act="cube">🧊 Кубик<span>бросить предмет</span></button>
+    <button class="tool act" data-act="color">🌈 Цвет<span>сменить краску</span></button>
+    <button class="tool act" data-act="cam">📷 Камера<span>вкл/выкл (невидимо)</span></button>
+    <button class="tool act" data-act="clear">🧹 Очистить<span>убрать всё</span></button>
+  </div>
+
+  <div id="crosshair">+</div>
+
+  <div id="enter">
+    <h1>VR123</h1>
+    <p>Лиминальное пространство · белый пол в клеточку<br>
+       трекинг рук, спавн кубиков, сварка, баллончик, нпс и оружие</p>
+    <button id="btnVR">🥽 Войти в VR (шлем / Quest)</button>
+    <button id="btnFlat">🖥 Играть без шлема (мышь/тач)</button>
+    <div id="caps"></div>
+  </div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="js/core.js"></script>
+<script src="js/hands.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/npcs.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

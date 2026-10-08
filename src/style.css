@@ -1,0 +1,58 @@
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#fff;font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif;color:#111}
+#stage{position:fixed;inset:0}
+#stage canvas{display:block;width:100%;height:100%}
+
+/* Камера. В VR она включена, но не отрисовывается — мы её не видим. */
+#passthrough{position:fixed;width:2px;height:2px;opacity:.001;pointer-events:none;z-index:-1}
+
+#overlay{position:fixed;inset:0;pointer-events:none;z-index:10}
+
+#hud{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.72);
+  backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.12);border-radius:14px;
+  padding:10px 14px;font-size:12px;min-width:210px}
+#hudTitle{font-weight:800;font-size:14px;letter-spacing:.3px}
+#hudTitle span{font-weight:500;opacity:.55;font-size:11px}
+#hudStats{display:grid;gap:5px;margin-top:8px}
+#hudStats>div{display:flex;align-items:center;gap:8px}
+#hudStats b{width:42px;font-size:10px;opacity:.6;letter-spacing:.5px}
+#hudStats em{font-style:normal;font-weight:700;font-variant-numeric:tabular-nums}
+#hpBar{flex:1;height:7px;background:rgba(0,0,0,.1);border-radius:99px;overflow:hidden}
+#hpBar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#22c55e,#84cc16);transition:width .15s}
+#hudLog{margin-top:8px;font-size:11px;opacity:.65;min-height:14px}
+
+#tools{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+  display:flex;gap:6px;padding:8px;background:rgba(255,255,255,.78);
+  backdrop-filter:blur(10px);border:1px solid rgba(0,0,0,.12);border-radius:16px;
+  pointer-events:auto;max-width:96vw;overflow-x:auto}
+.tool{pointer-events:auto;border:1px solid rgba(0,0,0,.1);background:#fff;border-radius:11px;
+  padding:7px 10px;font-size:13px;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:2px;min-width:74px;transition:transform .08s,background .12s}
+.tool span{font-size:9px;opacity:.5;font-weight:500}
+.tool:hover{background:#f4f4f5}
+.tool:active{transform:scale(.95)}
+.tool.active{background:#111;color:#fff;border-color:#111}
+.tool.active span{opacity:.65}
+.tool.act{background:#f1f5f9}
+.tool.on{background:#2563eb;color:#fff;border-color:#2563eb}
+.tool.on span{opacity:.7}
+.sep{width:1px;background:rgba(0,0,0,.12);margin:4px 2px}
+
+#crosshair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:22px;opacity:.35;display:none;font-weight:300}
+
+#enter{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:14px;background:rgba(255,255,255,.86);backdrop-filter:blur(14px);
+  pointer-events:auto;text-align:center;padding:20px}
+#enter h1{font-size:52px;letter-spacing:-2px;font-weight:900}
+#enter p{opacity:.6;font-size:14px;line-height:1.6;max-width:440px}
+#enter button{border:0;border-radius:14px;padding:14px 26px;font-size:16px;font-weight:700;
+  cursor:pointer;background:#111;color:#fff;min-width:300px}
+#enter button#btnFlat{background:#fff;color:#111;border:1px solid rgba(0,0,0,.2);font-weight:600;font-size:14px}
+#enter button[disabled]{opacity:.35;cursor:not-allowed}
+#caps{font-size:11px;opacity:.5;max-width:520px;line-height:1.7}
+#caps b{color:#111}
+.hidden{display:none!important}
+body.flat #crosshair{display:block}
+
