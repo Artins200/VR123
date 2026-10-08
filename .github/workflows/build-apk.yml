@@ -1,0 +1,58 @@
+name: Build APK
+
+# Собирает НАСТОЯЩИЙ устанавливаемый .apk из index.html через Capacitor.
+# Запуск: вкладка Actions -> "Build APK" -> Run workflow (или пуш в main).
+# Готовый файл скачивается в артефакте VR123-apk.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # добираем платформу/тулзы, которых может не хватать под compileSdk Capacitor
+      - uses: android-actions/setup-android@v3
+
+      - name: Собрать Capacitor-проект
+        run: |
+          set -euo pipefail
+          mkdir -p build/app
+          cp index.html build/app/index.html
+          cd build/app
+          npm init -y
+          npm i @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init VR123 com.vr123.app --web-dir=.
+          npx cap add android
+          npx cap sync android
+
+      - name: gradlew assembleDebug
+        working-directory: build/app/android
+        run: |
+          set -euo pipefail
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+
+      - name: Показать, что получилось
+        run: |
+          find build/app/android -name '*.apk' -exec ls -la {} \;
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VR123-apk
+          path: build/app/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

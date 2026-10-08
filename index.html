@@ -2,20 +2,29 @@
 <!--
   VR123 — единый файл. Внутри: three.js + весь код. Внешних запросов нет, работает офлайн.
 
+  ЭТО НЕ УСТАНАВЛИВАЕМЫЙ .apk, А САМОДОСТАТОЧНЫЙ HTML.
+  Android на файл с расширением .apk ругается «не удалось обработать этот пакет»,
+  потому что ищет внутри ZIP с AndroidManifest.xml и classes.dex, а тут HTML.
+  Поэтому файл называется index.html.
+
   КАК ЗАПУСТИТЬ
-  1) На телефоне/планшете/ПК: открой этот файл в Chrome (или перетащи в браузер).
-  2) В шлеме (Quest/Pico): скопируй файл на устройство и открой в Oculus Browser —
+  1) Телефон / планшет / ПК: открой этот файл в Chrome (или перетащи в браузер).
+     Если Android не даёт открыть файл из загрузок — переименуй его в vr123.html.
+  2) Шлем (Quest / Pico): скопируй файл на устройство и открой в Oculus Browser —
      там есть WebXR, трекинг рук и кнопка «Войти в VR».
 
-  КАК ПРЕВРАТИТЬ В НАСТОЯЩИЙ .apk (нужен компьютер с Java 17 + Android SDK —
-  в веб-песочнице их нет, поэтому бинарный apk собрать там невозможно):
+  КАК ПОЛУЧИТЬ НАСТОЯЩИЙ УСТАНАВЛИВАЕМЫЙ .apk
+  В веб-песочнице его собрать нельзя (нет java/javac и Android SDK). Два рабочих пути:
+  a) GitHub Actions: в репозитории есть .github/workflows/build-apk.yml —
+     запушь ветку, зайди в Actions -> Build APK -> скачай артефакт VR123-apk.
+  b) Локально (Java 17 + Android SDK):
      npm i -g @capacitor/cli @capacitor/core && npm i @capacitor/android
-     mkdir app && cp VR123.apk app/index.html
+     mkdir app && cp index.html app/
      cd app && npm init -y && npx cap init VR123 com.vr123.app --web-dir=.
      npx cap add android && npx cap sync && cd android && ./gradlew assembleDebug
      -> android/app/build/outputs/apk/debug/app-debug.apk
-  Для WebXR в таком apk нужен WebView с поддержкой WebXR; надёжнее всего —
-  просто открыть этот файл в Oculus Browser на шлеме.
+  Учти: для WebXR внутри такого apk нужен WebView с поддержкой WebXR,
+  надёжнее всего открывать этот файл напрямую в Oculus Browser на шлеме.
 -->
 <html lang="ru">
 <head>
