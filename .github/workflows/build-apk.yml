@@ -95,7 +95,8 @@ jobs:
           path: build/app/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
 
-      # лог — всегда, чтобы падение можно было разобрать
+      # лог — всегда. Артефакты из песочницы не скачать (редирект на
+      # blob.core.windows.net), поэтому дублируем лог issue'ем через API.
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -105,3 +106,17 @@ jobs:
             cap.txt
             gradle.txt
           if-no-files-found: ignore
+
+      - name: Опубликовать лог issue'ем
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo; echo '### diag.txt'; echo '```'; tail -c 3000 diag.txt 2>/dev/null || echo "(нет)"; echo '```'
+            echo; echo '### cap.txt'; echo '```'; tail -c 5000 cap.txt 2>/dev/null || echo "(нет)"; echo '```'
+            echo; echo '### gradle.txt (хвост)'; echo '```'; tail -c 5000 gradle.txt 2>/dev/null || echo "(нет)"; echo '```'
+          } > body.md
+          gh issue create --title "Build APK лог: run $GITHUB_RUN_ID" --body-file body.md \
+            || echo "не удалось создать issue" 
