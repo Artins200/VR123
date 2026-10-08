@@ -1,8 +1,8 @@
 name: Build APK
 
 # Собирает НАСТОЯЩИЙ устанавливаемый .apk из index.html через Capacitor.
-# Запуск: вкладка Actions -> "Build APK" -> Run workflow (или пуш в main).
-# Готовый файл скачивается в артефакте VR123-apk.
+# Готовый файл — в артефакте VR123-apk. Если сборка упала, смотри артефакт
+# VR123-buildlog: туда складывается весь вывод шагов.
 #
 # ВАЖНО: WebXR внутри такого apk работать не будет — в Android WebView его нет
 # (спецификация W3C: "Android WebView None"). Для VR открывай index.html
@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      # SDK на ubuntu-latest предустановлен, эти пути подхватывает gradle
       ANDROID_HOME: /usr/local/lib/android/sdk
       ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     steps:
@@ -33,57 +32,76 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Что уже есть в SDK (диагностика)
+      - name: Диагностика SDK
         run: |
-          ls "$ANDROID_HOME" || echo "нет $ANDROID_HOME"
-          echo "--- platforms ---"; ls "$ANDROID_HOME/platforms" 2>/dev/null || true
-          echo "--- build-tools ---"; ls "$ANDROID_HOME/build-tools" 2>/dev/null || true
-          java -version
-          # принимаем лицензии, иначе gradle остановится на запросе
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || \
-          yes | "$ANDROID_HOME/tools/bin/sdkmanager" --licenses >/dev/null 2>&1 || \
-          echo "sdkmanager не найден — полагаемся на предустановленное"
+          {
+            echo "=== ANDROID_HOME ==="; ls -la "$ANDROID_HOME" 2>&1 || true
+            echo "=== platforms ==="; ls "$ANDROID_HOME/platforms" 2>&1 || true
+            echo "=== build-tools ==="; ls "$ANDROID_HOME/build-tools" 2>&1 || true
+            echo "=== cmdline-tools ==="; ls "$ANDROID_HOME/cmdline-tools" 2>&1 || true
+            echo "=== java ==="; java -version 2>&1 || true
+            echo "=== node ==="; node -v; npm -v
+          } | tee diag.txt
+          # принимаем лицензии, иначе gradle встаёт на запросе
+          SM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          [ -x "$SM" ] || SM="$ANDROID_HOME/tools/bin/sdkmanager"
+          if [ -x "$SM" ]; then yes | "$SM" --licenses >>diag.txt 2>&1 || true; fi
 
-      - name: Собрать Capacitor-проект
+      - name: Capacitor-проект
         run: |
-          set -euo pipefail
           mkdir -p build/app
           cp index.html build/app/index.html
           cd build/app
-          npm init -y
-          npm i @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init VR123 com.vr123.app --web-dir=.
-          npx cap add android
-          npx cap sync android
-          echo "--- какой compileSdk нужен ---"
-          grep -RhoE "compileSdk(Version)? *= *[0-9]+" android --include=*.gradle --include=*.properties | sort -u
+          {
+            set -x
+            npm init -y
+            npm i @capacitor/core @capacitor/cli @capacitor/android
+            npx cap init VR123 com.vr123.app --web-dir=.
+            npx cap add android
+            npx cap sync android
+          } >>../../cap.txt 2>&1
+          tail -40 ../../cap.txt
+          # без pipefail: grep ничего не найдёт — шаг всё равно не должен падать
+          grep -RhoE "compileSdk(Version)?[^0-9]*[0-9]+" android >>../../cap.txt 2>&1 || echo "compileSdk не нашёлся grep-ом"
 
-      - name: Добрать нужную платформу, если её нет
+      - name: Нужная платформа
         run: |
-          set -uo pipefail
-          NEED=$(grep -RhoE "compileSdk(Version)? *= *[0-9]+" build/app/android --include=*.gradle --include=*.properties \
+          NEED=$(grep -RhoE "compileSdk(Version)?[^0-9]*[0-9]+" build/app/android 2>/dev/null \
                  | grep -oE "[0-9]+" | sort -n | tail -1)
           NEED=${NEED:-35}
           echo "нужен android-$NEED"
           if [ ! -d "$ANDROID_HOME/platforms/android-$NEED" ]; then
             SM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
             [ -x "$SM" ] || SM="$ANDROID_HOME/tools/bin/sdkmanager"
-            "$SM" "platforms;android-$NEED" || echo "не удалось доустановить android-$NEED"
+            "$SM" "platforms;android-$NEED" || echo "не доустановилось, пробуем собирать как есть"
           fi
 
       - name: gradlew assembleDebug
         working-directory: build/app/android
         run: |
-          set -euo pipefail
           chmod +x gradlew
-          ./gradlew --no-daemon assembleDebug
+          ./gradlew --no-daemon --stacktrace assembleDebug 2>&1 | tee ../../../gradle.txt
+          exit ${PIPESTATUS[0]}
 
-      - name: Показать, что получилось
+      - name: Что получилось
+        if: always()
         run: |
-          find build/app/android -name '*.apk' -exec ls -la {} \;
+          find build -name '*.apk' -exec ls -la {} \; 2>&1 | tee -a gradle.txt || true
 
+      # артефакт с apk — только если собралось
       - uses: actions/upload-artifact@v4
         with:
           name: VR123-apk
           path: build/app/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+
+      # лог — всегда, чтобы падение можно было разобрать
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: VR123-buildlog
+          path: |
+            diag.txt
+            cap.txt
+            gradle.txt
+          if-no-files-found: ignore
