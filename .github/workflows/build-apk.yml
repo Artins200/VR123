@@ -13,6 +13,11 @@ on:
   push:
     branches: [main]
 
+# GITHUB_TOKEN по умолчанию read-only — без этого issue с логом не создаётся
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -118,5 +123,5 @@ jobs:
             echo; echo '### cap.txt'; echo '```'; tail -c 5000 cap.txt 2>/dev/null || echo "(нет)"; echo '```'
             echo; echo '### gradle.txt (хвост)'; echo '```'; tail -c 5000 gradle.txt 2>/dev/null || echo "(нет)"; echo '```'
           } > body.md
-          gh issue create --title "Build APK лог: run $GITHUB_RUN_ID" --body-file body.md \
-            || echo "не удалось создать issue" 
+          # без || : если не создалось, шаг должен упасть и показать ошибку
+          gh issue create --title "Build APK лог: run $GITHUB_RUN_ID" --body-file body.md 
