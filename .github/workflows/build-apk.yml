@@ -83,23 +83,25 @@ jobs:
           fi
 
       # Capacitor тянет kotlin-stdlib 1.8.22 и kotlin-stdlib-jdk8 1.6.21 —
-      # "Duplicate class kotlin.streams.jdk8...". Лечится constraints.
+      # "Duplicate class kotlin.streams.jdk8...". force в КОРНЕВОМ build.gradle
+      # не помог: конфигурации живут в :app, поэтому правим app/build.gradle.
       - name: Разрулить конфликт kotlin-stdlib
         run: |
-          cat >> build/app/android/build.gradle <<'GRADLE'
+          cat >> build/app/android/app/build.gradle <<'GRADLE'
 
           // фикс дублей классов kotlin-stdlib / kotlin-stdlib-jdk8
           configurations.all {
-              resolutionStrategy {
-                  force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.24'
-                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.24'
-                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24'
-                  force 'org.jetbrains.kotlin:kotlin-stdlib-common:1.9.24'
+              resolutionStrategy.eachDependency { d ->
+                  if (d.requested.group == 'org.jetbrains.kotlin' && d.requested.name.startsWith('kotlin-stdlib')) {
+                      d.useVersion '1.9.24'
+                  }
               }
+              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
           }
           GRADLE
-          echo "--- хвост build.gradle ---"
-          tail -15 build/app/android/build.gradle
+          echo "--- хвост app/build.gradle ---"
+          tail -20 build/app/android/app/build.gradle
 
       - name: gradlew assembleDebug
         working-directory: build/app/android
