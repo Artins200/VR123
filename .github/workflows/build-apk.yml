@@ -3,6 +3,10 @@ name: Build APK
 # Собирает НАСТОЯЩИЙ устанавливаемый .apk из index.html через Capacitor.
 # Запуск: вкладка Actions -> "Build APK" -> Run workflow (или пуш в main).
 # Готовый файл скачивается в артефакте VR123-apk.
+#
+# ВАЖНО: WebXR внутри такого apk работать не будет — в Android WebView его нет
+# (спецификация W3C: "Android WebView None"). Для VR открывай index.html
+# в Oculus Browser на шлеме.
 
 on:
   workflow_dispatch:
@@ -13,6 +17,10 @@ jobs:
   apk:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      # SDK на ubuntu-latest предустановлен, эти пути подхватывает gradle
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     steps:
       - uses: actions/checkout@v4
 
@@ -25,8 +33,16 @@ jobs:
         with:
           node-version: '20'
 
-      # добираем платформу/тулзы, которых может не хватать под compileSdk Capacitor
-      - uses: android-actions/setup-android@v3
+      - name: Что уже есть в SDK (диагностика)
+        run: |
+          ls "$ANDROID_HOME" || echo "нет $ANDROID_HOME"
+          echo "--- platforms ---"; ls "$ANDROID_HOME/platforms" 2>/dev/null || true
+          echo "--- build-tools ---"; ls "$ANDROID_HOME/build-tools" 2>/dev/null || true
+          java -version
+          # принимаем лицензии, иначе gradle остановится на запросе
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || \
+          yes | "$ANDROID_HOME/tools/bin/sdkmanager" --licenses >/dev/null 2>&1 || \
+          echo "sdkmanager не найден — полагаемся на предустановленное"
 
       - name: Собрать Capacitor-проект
         run: |
@@ -39,6 +55,21 @@ jobs:
           npx cap init VR123 com.vr123.app --web-dir=.
           npx cap add android
           npx cap sync android
+          echo "--- какой compileSdk нужен ---"
+          grep -RhoE "compileSdk(Version)? *= *[0-9]+" android --include=*.gradle --include=*.properties | sort -u
+
+      - name: Добрать нужную платформу, если её нет
+        run: |
+          set -uo pipefail
+          NEED=$(grep -RhoE "compileSdk(Version)? *= *[0-9]+" build/app/android --include=*.gradle --include=*.properties \
+                 | grep -oE "[0-9]+" | sort -n | tail -1)
+          NEED=${NEED:-35}
+          echo "нужен android-$NEED"
+          if [ ! -d "$ANDROID_HOME/platforms/android-$NEED" ]; then
+            SM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+            [ -x "$SM" ] || SM="$ANDROID_HOME/tools/bin/sdkmanager"
+            "$SM" "platforms;android-$NEED" || echo "не удалось доустановить android-$NEED"
+          fi
 
       - name: gradlew assembleDebug
         working-directory: build/app/android
