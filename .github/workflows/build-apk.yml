@@ -54,14 +54,15 @@ jobs:
 
       - name: Capacitor-проект
         run: |
-          mkdir -p build/app
-          cp index.html build/app/index.html
+          # Capacitor не принимает webDir="." — нужен отдельный каталог
+          mkdir -p build/app/www
+          cp index.html build/app/www/index.html
           cd build/app
           {
             set -x
             npm init -y
             npm i @capacitor/core @capacitor/cli @capacitor/android
-            npx cap init VR123 com.vr123.app --web-dir=.
+            npx cap init VR123 com.vr123.app --web-dir=www
             npx cap add android
             npx cap sync android
           } >>../../cap.txt 2>&1
