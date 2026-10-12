@@ -1,0 +1,10 @@
+{
+  "description": "Combat economy: the vanilla rules.md.ini keys the mashup rewrites so fighting pays.",
+  "columns": ["id","iniSection","key","value","why"],
+  "rows": [
+    {"id":"crate_regen","iniSection":"General","key":"CrateRegen","value":"0:02","why":"Crates come back fast enough that pressing an attack is worth it"},
+    {"id":"crate_money","iniSection":"General","key":"CrateMoney","value":"3000","why":"Money crates pay like a Counter-Strike round win"},
+    {"id":"unit_crate","iniSection":"General","key":"UnitCrateType","value":"TSCTA","why":"Free-unit crates hand out operators instead of host-game infantry"},
+    {"id":"ore_growth","iniSection":"General","key":"OreGrows","value":"no","why":"Income comes from fighting, not from turtling on ore"}
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "description": "One row per Counter-Strike: Source sound read out of the companion game's own archives. 'match' is a substring searched across every .wav path in the VPK tree. enabled=false for 1.0.0: repacking audio.bag/audio.idx replaces the host game's whole sound bank, which cannot be verified without a real install, so the launcher keeps the host game's own sounds (cloned from each donor weapon) and this stage is opt-in with --audio.",
+  "columns": [
+    "id",
+    "raName",
+    "match",
+    "kind",
+    "volume",
+    "priority",
+    "loop",
+    "required",
+    "enabled"
+  ],
+  "rows": [
+    {
+      "id": "ak47",
+      "raName": "tsak47",
+      "match": "weapons/ak47/ak47-1",
+      "kind": "weapon",
+      "volume": 90,
+      "priority": "critical",
+      "loop": "no",
+      "required": true,
+      "enabled": false
+    },
+    {
+      "id": "m4a1",
+      "raName": "tsm4a1",
+      "match": "weapons/m4a1/m4a1_unsil-1",
+      "kind": "weapon",
+      "volume": 90,
+      "priority": "critical",
+      "loop": "no",
+      "required": true,
+      "enabled": false
+    },
+    {
+      "id": "awp",
+      "raName": "tsawp",
+      "match": "weapons/awp/awp1",
+      "kind": "weapon",
+      "volume": 95,
+      "priority": "critical",
+      "loop": "no",
+      "required": true,
+      "enabled": false
+    },
+    {
+      "id": "deagle",
+      "raName": "tsdeagle",
+      "match": "weapons/deagle/deagle-1",
+      "kind": "weapon",
+      "volume": 90,
+      "priority": "critical",
+      "loop": "no",
+      "required": true,
+      "enabled": false
+    },
+    {
+      "id": "c4beep",
+      "raName": "tsc4beep",
+      "match": "weapons/c4/c4_beep",
+      "kind": "ui",
+      "volume": 70,
+      "priority": "normal",
+      "loop": "no",
+      "required": true,
+      "enabled": false
+    },
+    {
+      "id": "c4plant",
+      "raName": "tsc4plant",
+      "match": "weapons/c4/c4_plant",
+      "kind": "ui",
+      "volume": 80,
+      "priority": "normal",
+      "loop": "no",
+      "required": false,
+      "enabled": false
+    },
+    {
+      "id": "c4boom",
+      "raName": "tsc4boom",
+      "match": "weapons/c4/c4_exp_deb",
+      "kind": "explosion",
+      "volume": 100,
+      "priority": "critical",
+      "loop": "no",
+      "required": true,
+      "enabled": false
+    },
+    {
+      "id": "c4defuse",
+      "raName": "tsc4defuse",
+      "match": "weapons/c4/c4_disarm",
+      "kind": "ui",
+      "volume": 80,
+      "priority": "normal",
+      "loop": "no",
+      "required": false,
+      "enabled": false
+    }
+  ]
+}

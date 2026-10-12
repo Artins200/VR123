@@ -1,0 +1,10 @@
+{
+  "description": "One row per operator infantry added to the host game. bodyArt names an infantry image that already exists in the HOST game, so no art leaves either game.",
+  "columns": ["id","raUid","display","bodyArt","bodyArtFallback","cameo","primary","secondary","cost","speed","sight","armor","owner","prerequisite","crushable","c4Carrier"],
+  "rows": [
+    {"id":"ct_assault","raUid":"TSCTA","display":"CT Assault","bodyArt":"GGI","bodyArtFallback":"E1","cameo":"m4a1","primary":"m4a1","secondary":"deagle","cost":400,"speed":5,"sight":6,"armor":"none","owner":"Americans","prerequisite":"GABARR","crushable":"yes","c4Carrier":"no"},
+    {"id":"ct_sniper","raUid":"TSCTS","display":"CT Sniper","bodyArt":"SNIPE","bodyArtFallback":"E1","cameo":"awp","primary":"awp","secondary":"deagle","cost":600,"speed":4,"sight":8,"armor":"none","owner":"Americans","prerequisite":"GABARR","crushable":"yes","c4Carrier":"no"},
+    {"id":"t_rifleman","raUid":"TSTRA","display":"T Rifleman","bodyArt":"E2","bodyArtFallback":"E1","cameo":"ak47","primary":"ak47","secondary":"deagle","cost":400,"speed":5,"sight":6,"armor":"none","owner":"Russians","prerequisite":"NABARR","crushable":"yes","c4Carrier":"no"},
+    {"id":"t_bomber","raUid":"TSTBM","display":"T Bomber","bodyArt":"TERROR","bodyArtFallback":"E2","cameo":"c4","primary":"c4","secondary":"deagle","cost":800,"speed":6,"sight":5,"armor":"flak","owner":"Russians","prerequisite":"NABARR","crushable":"no","c4Carrier":"yes"}
+  ]
+}
