@@ -1,0 +1,8 @@
+{
+  "description": "How the mashup attaches to each game. One row per game.",
+  "columns": ["id","game","slug","role","folderEnv","markers","reads","neverCopies"],
+  "rows": [
+    {"id":"ra2","game":"Command & Conquer: Red Alert 2 and Yuri's Revenge","slug":"pc-command-conquer-red-alert-2-and-yuri-s-revenge","role":"primary","folderEnv":"RA2_DIR","markers":["gamemd.exe","game.exe","ra2md.mix","ra2.mix"],"reads":["ra2md.mix/genericmd.mix/rulesmd.ini","ra2md.mix/genericmd.mix/artmd.ini","ra2md.mix/genericmd.mix/soundmd.ini","cameo.pal"],"neverCopies":"Nothing is copied out of it into the upload; generated files are written into it on the player's PC"},
+    {"id":"css","game":"Counter-Strike: Source","slug":"pc-counter-strike-source","role":"companion","folderEnv":"CSS_DIR","markers":["cstrike/cstrike_dir.vpk","hl2/hl2_textures_dir.vpk","hl2.exe"],"reads":["cstrike_dir.vpk: scripts/weapon_*.txt","cstrike_dir.vpk: sound/weapons/**/*.wav","cstrike_dir.vpk: materials/models/weapons/**/*.vtf"],"neverCopies":"Nothing is copied out of it into the upload; its files are read at install time and converted in memory"}
+  ]
+}

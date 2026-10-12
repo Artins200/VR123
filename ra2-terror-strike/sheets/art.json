@@ -1,0 +1,65 @@
+{
+  "description": "One row per sidebar cameo rendered from a Counter-Strike: Source texture in the companion game's own archives. fallback=\"donor\" means: when the texture or the host game's cameo palette cannot be found, the operator keeps the cameo of the host-game infantry its body is cloned from, so the sidebar always shows a real icon.",
+  "columns": [
+    "id",
+    "raName",
+    "match",
+    "width",
+    "height",
+    "palette",
+    "fallback",
+    "required"
+  ],
+  "rows": [
+    {
+      "id": "ak47",
+      "raName": "tsakic",
+      "match": "weapons/v_models/rif_ak47",
+      "width": 60,
+      "height": 48,
+      "palette": "cameo.pal",
+      "required": true,
+      "fallback": "donor"
+    },
+    {
+      "id": "m4a1",
+      "raName": "tsm4ic",
+      "match": "weapons/v_models/rif_m4a1",
+      "width": 60,
+      "height": 48,
+      "palette": "cameo.pal",
+      "required": true,
+      "fallback": "donor"
+    },
+    {
+      "id": "awp",
+      "raName": "tsawic",
+      "match": "weapons/v_models/snip_awp",
+      "width": 60,
+      "height": 48,
+      "palette": "cameo.pal",
+      "required": true,
+      "fallback": "donor"
+    },
+    {
+      "id": "deagle",
+      "raName": "tsdgic",
+      "match": "weapons/v_models/pist_deagle",
+      "width": 60,
+      "height": 48,
+      "palette": "cameo.pal",
+      "required": true,
+      "fallback": "donor"
+    },
+    {
+      "id": "c4",
+      "raName": "tsc4ic",
+      "match": "weapons/v_models/c4",
+      "width": 60,
+      "height": 48,
+      "palette": "cameo.pal",
+      "required": true,
+      "fallback": "donor"
+    }
+  ]
+}

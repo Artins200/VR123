@@ -1,0 +1,17 @@
+{
+  "id": "ra2-terror-strike",
+  "title": "Yuri's Revenge: Terror Strike",
+  "tagline": "Counter-Strike: Source's guns, sounds and bomb-defusal rules, converted into your own Red Alert 2 / Yuri's Revenge.",
+  "host": "pc-command-conquer-red-alert-2-and-yuri-s-revenge",
+  "companions": ["pc-counter-strike-source"],
+  "playMode": "solo",
+  "license": "MIT",
+  "remix": true,
+  "credits": [
+    {"who": "Command & Conquer: Red Alert 2 and Yuri's Revenge", "role": "host game", "by": "Westwood Studios / EA"},
+    {"who": "Counter-Strike: Source", "role": "companion game", "by": "Valve / Counter-Strike team"},
+    {"who": "Mashup code, sheets and converter", "role": "author", "by": "VR123 author"}
+  ],
+  "contentPolicy": "No game content is shipped. The converter reads each player's own installed copies at install time and writes generated files into the Red Alert 2 / Yuri's Revenge folder only.",
+  "version": "1.0.0"
+}

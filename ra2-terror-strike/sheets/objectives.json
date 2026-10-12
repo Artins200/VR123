@@ -1,0 +1,7 @@
+{
+  "description": "The Counter-Strike: Source objective brought into the host game.",
+  "columns": ["id","display","carrier","weapon","plantSound","beepSound","boomSound","defuseSound","damage","cellSpread","fuseSeconds","notes"],
+  "rows": [
+    {"id":"c4","display":"C4 plant and defuse","carrier":"t_bomber","weapon":"c4","plantSound":"c4plant","beepSound":"c4beep","boomSound":"c4boom","defuseSound":"c4defuse","damage":1200,"cellSpread":4,"fuseSeconds":40,"notes":"The bomber's weapon is a delayed-blast warhead: it beeps on plant and detonates with the companion game's own explosion sound"}
+  ]
+}

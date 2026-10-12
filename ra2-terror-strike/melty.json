@@ -1,0 +1,53 @@
+{
+  "$comment": "DRAFT recipe. Written against the recipe fields described in the publish brief. It has NOT been through validate_recipe or one_click_check: melty.gg is not reachable from this build machine (see README, 'What is still missing'), so the schema could not be confirmed. Every value here comes from a real file in this project.",
+  "version": "1.0.0",
+  "games": [
+    { "slug": "pc-command-conquer-red-alert-2-and-yuri-s-revenge", "role": "primary" },
+    { "slug": "pc-counter-strike-source", "role": "companion" }
+  ],
+  "components": [
+    {
+      "id": "launcher",
+      "fileName": "TerrorStrike-*.zip",
+      "description": "The converter and launcher. Reads both games on the player's PC, writes generated files into the Red Alert 2 / Yuri's Revenge folder, then starts the game. Contains no game content."
+    }
+  ],
+  "files": [
+    { "from": "TerrorStrike.exe", "to": "{game}/TerrorStrike.exe" },
+    { "from": "LICENSE.txt", "to": "{game}/TerrorStrike-LICENSE.txt" },
+    { "from": "README.txt", "to": "{game}/TerrorStrike-README.txt" }
+  ],
+  "launch": {
+    "kind": "exe",
+    "exe": "{game}/TerrorStrike.exe",
+    "args": ["--ra2", "{game}", "--css", "{game:pc-counter-strike-source}"],
+    "env": {
+      "RA2_DIR": "{game}",
+      "CSS_DIR": "{game:pc-counter-strike-source}"
+    }
+  },
+  "test": {
+    "checks": [
+      { "id": "build", "command": "{game}/TerrorStrike.exe --test --ra2 {game} --css {game:pc-counter-strike-source} --log {game}/melty.log", "expects": "exit code 0 and the line 'test build finished: clean' in the log" },
+      { "id": "content-read", "expects": "the log lists one 'companion: scripts/weapon_*.txt' line per weapon and one 'cameo *.shp' line per icon" },
+      { "id": "host-written", "expects": "rulesmd.ini, artmd.ini and five *.shp files exist in the host folder and are listed in terrorstrike-manifest.json" }
+    ]
+  },
+  "multiplayer": null,
+  "credits": [
+    { "who": "Westwood Studios / Electronic Arts", "what": "Command & Conquer: Red Alert 2 and Yuri's Revenge, the host game" },
+    { "who": "Valve / Counter-Strike team", "what": "Counter-Strike: Source, the companion game whose weapon scripts and textures are converted" },
+    { "who": "VR123 author", "what": "Mashup code, sheets and converter (MIT)" }
+  ],
+  "license": "MIT",
+  "remix": true,
+  "says": [
+    "Four Counter-Strike operators join Red Alert 2 / Yuri's Revenge skirmish",
+    "Their weapons use the damage, clip, cycle time and range read from the player's own Counter-Strike: Source weapon scripts",
+    "Their sidebar icons are rendered from the player's own Counter-Strike: Source weapon textures",
+    "A T Bomber carries a C4 charge that detonates for 1200 damage across four cells",
+    "Combat pays: crates respawn in two minutes, money crates are worth 3000, free-unit crates hand out operators, ore no longer grows",
+    "Single player skirmish against the AI",
+    "Everything is generated on the player's PC from their own copies; nothing from either game is redistributed"
+  ]
+}
