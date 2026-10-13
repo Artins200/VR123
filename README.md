@@ -1,46 +1,67 @@
-# VR123 — лимунальное пространство
+# VR123
 
-Вся игра — в одном файле: **[`index.html`](index.html)** (747 КБ: HTML + CSS + three.js + весь код внутри, внешних запросов нет, работает офлайн).
+One Melty mashup lives in this repository:
 
-## Как запустить
+## Yuri's Revenge: Terror Strike
 
-- **Шлем (Quest / Pico):** скопируй `index.html` на устройство и открой в Oculus Browser — там есть WebXR и трекинг рук. Нажми «Войти в VR».
-- **Телефон / ПК:** открой файл в Chrome. Если Android не даёт открыть файл из загрузок — переименуй в `vr123.html`.
-- **Без шлема:** ПКМ — осмотр, WASD — ходьба, `1`–`8` — инструменты, `B` — поставить блок, `X` — стереть, `N` — нпс, `C` — камера.
+Four Counter-Strike: Source operators join a normal Red Alert 2 / Yuri's Revenge skirmish.
+Their weapons use the damage, clip, cycle time and range read out of the player's own
+Counter-Strike: Source weapon scripts, their sidebar icons are rendered from the player's own
+weapon textures, a T Bomber carries a C4 charge worth 1200 damage across four cells, and the
+economy pays for kills: crates respawn every two minutes, money crates are worth 3000,
+free-unit crates hand out operators, and ore no longer grows. Single player skirmish against
+the AI.
 
-## Песочница
+Both games are **required** and owned by the player:
 
-Всё делается **указкой**: из руки (в VR) или из перекрестья (без шлема) идёт луч, на поверхности — точка попадания.
+| Game | Role | What happens to it |
+|---|---|---|
+| Command & Conquer: Red Alert 2 / Yuri's Revenge | primary (host) | the converter writes generated `rulesmd.ini` / `artmd.ini` / `*.shp` entries into its folder, then starts `gamemd.exe` |
+| Counter-Strike: Source | companion | its VPKs are **read** at launch for weapon scripts and textures; nothing is copied out of it |
 
-- 🧱 **Блоки** — ставятся в точку прицела с привязкой к сетке 0.5 м. Перед постановкой виден призрак ячейки. В одну ячейку второй блок не встанет.
-- ✋ **Рука** — пинчем берёшь предмет *или блок*, переносишь и отпускаешь; блок при этом липнет к сетке. Бросок предмета даёт импульс.
-- 🧽 **Ластик** — убирает блок / предмет / нпс. Сначала пробует точное попадание лучом, потом ближайшее к лучу, потом то, что стоит под точкой прицела на земле — иначе по тонкому нпс с расстояния не попасть.
-- 👤 **НПС** — спавнится ровно в точку прицела, не в случайное место. Есть и «орда» на 5 штук.
-- 🧊 **Кубики** — падают, отскакивают и **ложатся на блоки**, так что из блоков можно строить, а кубиками пользоваться.
-- 🎨 Баллончик красит пол, блоки и предметы. ⚡ Сварка даёт дугу, искры и светящийся шов.
-- 🔫 Пистолет / 💥 винтовка — hitscan, попадание в голову (визор) вдвое больнее. 🗡 Меч бьёт по дуге взмаха.
-- 🌈 Цвет, 📷 камера (включается, но остаётся скрытым слоем), 🧹 очистить мир.
+Nothing from either game is stored in this repository or in the published package. The
+converter reads the player's own copies when it runs, so every player brings their own content.
 
-В VR на левой руке наручное меню на 14 пунктов — подними руку ладонью к себе.
+## Where things are
 
-## Про .apk — честно
+| Path | What it is |
+|---|---|
+| [`melty.json`](melty.json) | the install and launch recipe Melty reads from this repo root when the mashup is published from a GitHub link. **Still a draft**: `validate_recipe` / `one_click_check` have not run (see below) |
+| [`ra2-terror-strike/README.md`](ra2-terror-strike/README.md) | player-facing text: what you get, how to run it, how to remove it, what is verified |
+| [`ra2-terror-strike/DESIGN.md`](ra2-terror-strike/DESIGN.md) | why the mashup is shaped the way it is, and every balance number |
+| [`ra2-terror-strike/sheets/`](ra2-terror-strike/sheets) | the design as data — the source of truth the C code is generated from |
+| [`ra2-terror-strike/src/`](ra2-terror-strike/src) | the converter and launcher, plain C, no dependencies |
+| [`ra2-terror-strike/MODLOG.md`](ra2-terror-strike/MODLOG.md) | build log: what was scanned, what was tried, what was measured |
+| [`ra2-terror-strike/PUBLISH.md`](ra2-terror-strike/PUBLISH.md) | step-by-step publishing runbook (in Russian) |
+| [`ra2-terror-strike/LICENSE`](ra2-terror-strike/LICENSE) | MIT, remixing allowed |
 
-**Бинарный APK в этой песочнице собрать нельзя.** Проверено: `java`/`javac`/`keytool` отсутствуют (поиск по всему диску), `/usr/lib/jvm` нет, `ANDROID_HOME` пуст, `sdkmanager`/`aapt2`/`zipalign`/`apksigner`/`gradle` не установлены, `apt-get update` → `Permission denied` (нет root), `apt-get install default-jdk` → `Unable to locate package`. npm-пакет `jre` (4 685 байт) бинарей не содержит — качает JRE с внешнего хоста, а `dl.google.com` и `api.adoptium.net` вне белого списка.
+## Build and test
 
-**И главное: APK был бы хуже, а не лучше.** WebXR в Android WebView не поддерживается вовсе — в спецификации W3C для `Android WebView` стоит `None`. То есть apk-обёртка запустила бы только плоский режим, без шлема, без трекинга рук. Именно браузер (Chrome / Oculus Browser) даёт здесь больше.
+```
+cd ra2-terror-strike
+node tools/gen_data.mjs        # sheets -> generated/ts_data.h
+node tools/preflight.mjs       # every row x column cell filled, every reference resolves
+bash tests/run_tests.sh        # codegen, preflight, 58 unit tests, an end-to-end run, Windows build
+node tools/package.mjs         # -> dist/TerrorStrike-1.0.0.zip with its size and sha256
+```
 
-Раньше файл назывался `VR123.apk`, и Android писал «не удалось обработать этот пакет» — он ищет внутри ZIP c `AndroidManifest.xml` и `classes.dex`, а это HTML. Имя исправлено.
+`tests/run_tests.sh` needs a C compiler for the native tests and
+[zig](https://pypi.org/project/ziglang/) (`pip install ziglang`) for the Windows build, which is
+a cross-compile from Linux: `zig cc -target x86_64-windows -O2 -o dist/TerrorStrike.exe src/*.c`.
 
-Если `.apk` всё-таки нужен: вкладка **Actions** → **Build APK** → **Run workflow**, артефакт `VR123-apk` содержит `app-debug.apk`. Но WebXR в нём работать не будет по причине выше.
+## Status
 
-## Проверка
+Green on the build machine: preflight over 412 sheet cells, 58 unit tests, an end-to-end run
+against stand-in game folders, a Windows PE build, `um publish check` clean (0 failures,
+0 warnings).
 
-`node test.js` разбирает сам `index.html`, достаёт из него `<style>` и оба `<script>` и исполняет их в jsdom — гоняется ровно тот код, что уедет пользователю. Заглушены только WebGL-контекст и аудио.
+Still a **draft**, because two things can only happen on a Windows PC that owns both games:
+a real run of the converter against real game files, and a real gameplay screenshot. Melty
+requires a finished screenshot before a mashup can go live.
 
-**70 проверок, все зелёные** (три запуска подряд). Покрыто: указка и точка попадания, привязка блоков к сетке и защита от дублей, постановка в точку прицела, кубик ложится НА блок, перенос блока рукой, ластик (блок/нпс + «далёкий блок не пострадал»), спавн нпс в прицел (смещение 0.0000 м), краска и сварка, поза кисти для обеих рук при пинче 0/0.5/1, захват и бросок, бой (выстрел в визор 100 → 66 hp, меч 100 → 42), преследование нпс, урон и респаун, наручное меню (раскладка и хит-тест совпадают 14/14), очистка мира, 900 кадров без исключений.
+## What was removed
 
-Чего проверить не смог: реальный рендер на GPU и живой WebXR-сеанс с трекингом рук — в песочнице нет ни GPU, ни шлема. Логику рук проверял на синтетических позах, а не на данных с камеры.
-
-## Исходники
-
-`src/` — разложенный по модулям код (`js/core.js`, `hands.js`, `tools.js`, `pointer.js`, `npcs.js`, `main.js`), `build.js` собирает из них единый `index.html`. Правь `src/`, потом `node build.js && node test.js`.
+This repository used to contain a standalone WebXR sandbox (`index.html`, `build.js`,
+`test.js`, `src/`, and a `Build APK` workflow). It was removed: it needs no existing game to
+run, so it is not a Melty mashup and would have had to be rejected. It is still in the history —
+`git show 94081aa81f17be17dc33358ef00411ad785bd9cc:index.html > index.html` brings any of it back.

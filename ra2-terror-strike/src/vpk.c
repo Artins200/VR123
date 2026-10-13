@@ -182,6 +182,17 @@ int ts_vpk_scan(ts_vpk *list, int max, const char *game_root) {
     }
   }
   ts_dir_list_free(&top);
+  /* The companion game keeps its own content in cstrike/ and only shared content in hl2/.
+     Search the game-specific archives first, the way the Portal 2 field note in
+     universal-modder's knowledge base does (dlc folders first, then the base game). */
+  for (int i = 0; i < found; i++) {
+    for (int j = i + 1; j < found; j++) {
+      int a = strstr(list[i].dir_path, "cstrike") != NULL;
+      int b = strstr(list[j].dir_path, "cstrike") != NULL;
+      if (!a && b) { ts_vpk t = list[i]; list[i] = list[j]; list[j] = t; }
+    }
+  }
+  for (int i = 0; i < found; i++) ts_logf(TS_LOG_INFO, "vpk: search order %d: %s", i + 1, list[i].dir_path);
   ts_logf(TS_LOG_OK, "vpk: %d archives found under %s", found, game_root);
   return found;
 }

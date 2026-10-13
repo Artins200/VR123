@@ -273,7 +273,7 @@ static void resolve_cameos(ts_build *b, ts_ini *art) {
       ts_ini_sec *s = ts_ini_find(art, op->bodyArt);
       if (!s) s = ts_ini_find(art, op->bodyArtFallback);
       if (s && ts_ini_value(art, s->name, "Cameo", v, sizeof v)) snprintf(b->operator_cameo[i], sizeof b->operator_cameo[i], "%s", v);
-      else snprintf(b->operator_cameo[i], sizeof b->operator_cameo[i], "%s", g_art[0].fallback);
+      else b->operator_cameo[i][0] = 0;   /* keep whatever the cloned art section already says */
     }
   }
 }

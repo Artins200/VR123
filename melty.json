@@ -1,5 +1,5 @@
 {
-  "$comment": "DRAFT recipe. Written against the recipe fields described in the publish brief. It has NOT been through validate_recipe or one_click_check: melty.gg is not reachable from this build machine (see README, 'What is still missing'), so the schema could not be confirmed. Every value here comes from a real file in this project.",
+  "$comment": "DRAFT recipe, kept at the repository root because Melty reads it from there when the mashup is published from a GitHub link. Written against the recipe fields described in the publish brief; it has NOT been through validate_recipe or one_click_check, because melty.gg is not reachable from the build machine (see ra2-terror-strike/README.md, 'Still missing before this can be published'), so the schema could not be confirmed. Every value comes from a real file in this project: the component name is what tools/package.mjs produces, and the launch arguments are what dist/TerrorStrike.exe --help accepts.",
   "version": "1.0.0",
   "games": [
     { "slug": "pc-command-conquer-red-alert-2-and-yuri-s-revenge", "role": "primary" },
