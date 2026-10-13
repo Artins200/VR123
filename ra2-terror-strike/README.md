@@ -39,6 +39,49 @@ player's PC from the player's own copies, and the manifest
 (`terrorstrike-manifest.json`, written into the Red Alert 2 folder) lists every file that was
 created so it can be removed cleanly.
 
+## How to run
+
+**Through Melty (what players do):** press **Play**. Melty checks both games are installed,
+hands the mashup their folders and starts it. One click, no setup.
+
+**By hand on Windows**, without Melty — point the converter at both games and it starts the
+game for you:
+
+```bat
+TerrorStrike.exe ^
+  --ra2 "C:\Program Files (x86)\Steam\steamapps\common\Command and Conquer Red Alert II" ^
+  --css "C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Source"
+```
+
+The same two paths can come from the environment instead, which is how Melty passes them:
+`RA2_DIR` and `CSS_DIR`.
+
+| Flag | What it does |
+|---|---|
+| *(none)* | convert, install, then start `gamemd.exe` (`game.exe` for Red Alert 2 without Yuri's Revenge) |
+| `--test` | convert and verify only, do not start the game; exit 0 only when the log says `test build finished: clean` |
+| `--no-launch` | convert and install, then stop |
+| `--audio` | also repack the companion's sounds into `audio.bag`/`audio.idx` (off by default, see above) |
+| `--log <file>` | where to write the log; default `melty.log` in the working folder |
+| `--help` | the same list |
+
+Every run rewrites the generated files from whatever the two games contain right now, and
+`terrorstrike-manifest.json` in the Red Alert 2 folder lists each file it wrote — delete those
+to remove the mashup.
+
+**Building it yourself:**
+
+```bash
+node tools/gen_data.mjs      # sheets -> generated/ts_data.h
+node tools/preflight.mjs     # gate: every cell filled, every reference resolves
+bash tests/run_tests.sh      # unit tests + end-to-end + Windows build
+node tools/package.mjs       # dist/TerrorStrike-<version>.zip + size + sha256
+```
+
+`tests/run_tests.sh` needs a C compiler for the native tests and
+[zig](https://pypi.org/project/ziglang/) (`pip install ziglang`) for the Windows build, which
+is a cross-compile from Linux: `zig cc -target x86_64-windows -O2 -o dist/TerrorStrike.exe src/*.c`.
+
 ## How it is built
 
 ```
