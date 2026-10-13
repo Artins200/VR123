@@ -179,8 +179,13 @@ int ts_gen_art(ts_build *b, ts_ini *art, char *out, size_t cap) {
         if (o + n + 4 < cap) { memcpy(out + o, p, n); o += n; out[o++] = '\n'; out[o] = 0; }
       }
     }
-    P("Image=%s\nCameo=%s\nAltCameo=%s\n\n", src->name, b->operator_cameo[i], b->operator_cameo[i]);
-    ts_logf(TS_LOG_OK, "art [%s] cloned from [%s], cameo %s", op->raUid, src->name, b->operator_cameo[i]);
+    P("Image=%s\n", src->name);
+    /* Only override the icon when we actually have one; otherwise the cloned Cameo= from the
+       host game's own art section stays, which is always a real icon name. */
+    if (b->operator_cameo[i][0]) P("Cameo=%s\nAltCameo=%s\n", b->operator_cameo[i], b->operator_cameo[i]);
+    P("\n");
+    ts_logf(TS_LOG_OK, "art [%s] cloned from [%s], cameo %s", op->raUid, src->name,
+            b->operator_cameo[i][0] ? b->operator_cameo[i] : "(kept from the cloned section)");
   }
   return (int)o;
 }
