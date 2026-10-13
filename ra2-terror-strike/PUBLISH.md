@@ -14,7 +14,7 @@
 | Тесты (58 юнит + end-to-end + Windows-сборка) | `tests/run_tests.sh` |
 | Упаковка релиза | `tools/package.mjs` |
 | Готовый архив для загрузки | `dist/TerrorStrike-1.0.0.zip` |
-| Черновик рецепта установки | `melty.json` |
+| Черновик рецепта установки | `melty.json` в **корне репозитория** (там, где его ищет Melty при публикации по ссылке на GitHub) |
 
 ## Что нужно на ПК
 
@@ -96,7 +96,7 @@ dist\TerrorStrike.exe --test ^
 python -c "import hashlib,os;p='dist/TerrorStrike-1.0.0.zip';print(os.path.getsize(p), hashlib.sha256(open(p,'rb').read()).hexdigest())"
 ```
 
-На момент последней сборки: **145194 байт**, sha256 `014a18a2b9187d544f31779289e41288aee47790b6b11eb748d3c33b2b419506`.
+На момент последней сборки: **145194 байт**, sha256 `eab73a4f5d8218f682dc288be9e12d27a917093f505dcc56024e226baf21c814`.
 
 1. `start_upload` — fileName `TerrorStrike-1.0.0.zip`, размер и sha256 из команды выше
 2. PUT байтов архива по выданным заголовкам (заголовок Authorization туда **не** добавлять)
@@ -108,9 +108,10 @@ python -c "import hashlib,os;p='dist/TerrorStrike-1.0.0.zip';print(os.path.getsi
 Перед этим прогнать `inspect_package`, `validate_recipe` и `one_click_check` и исправить всё,
 что они покажут. `component.fileName` обязан совпадать с тем, что загружено.
 
-Если публикуешь через `githubRepo` — положить проверенный рецепт в `melty.json` **в корень
-репозитория** (сейчас он в `ra2-terror-strike/`), тогда Melty читает установку прямо из ссылки
-на GitHub и следующие релизы публикуются сами.
+При публикации через `githubRepo` Melty читает рецепт из `melty.json` **в корне репозитория** —
+он уже там лежит (`/melty.json`, в `component.fileName` стоит `TerrorStrike-*.zip`, где `*` —
+версия). После `validate_recipe` правки нужно вернуть в этот же файл и закоммитить: тогда Melty
+читает установку прямо из ссылки на GitHub, и каждый новый релиз публикуется сам.
 
 ## Шаг 6. Скриншот
 

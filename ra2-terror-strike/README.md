@@ -91,7 +91,8 @@ tools/preflight.mjs    every row x column cell filled, every cross-sheet referen
 src/*.c                the converter and launcher (plain C, no dependencies)
 tests/run_tests.sh     codegen, preflight, 58 unit tests, an end-to-end run, the Windows build
 dist/TerrorStrike.exe  cross-compiled for Windows, what players run
-melty.json             the install and launch recipe (draft, see below)
+MODLOG.md              what was scanned, tried and measured, step by step
+../melty.json          the install and launch recipe, at the repo root (draft, see below)
 ```
 
 Change a sheet, then `node tools/gen_data.mjs && bash tests/run_tests.sh`.
@@ -131,7 +132,7 @@ sound of the host-game weapon they were cloned from instead.
 1. **Melty is not reachable from the machine this was built on.** `melty.gg` is outside the
    network allowlist here, so `game_info`, `search_mashups`, `create_mod`, `start_upload`,
    `validate_recipe`, `one_click_check`, `test_release` and `publish` have not been called and
-   `melty.json` is a draft rather than a validated recipe.
+   `melty.json`, at the root of the repository, is a draft rather than a validated recipe.
 2. **Neither game is installed on this machine** (it is a Linux build box with no Steam), so
    the converter has never been run against real game files and there is **no real gameplay
    screenshot** yet. Until both exist on a Windows PC, this stays a draft.
